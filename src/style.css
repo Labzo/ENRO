@@ -1,0 +1,43 @@
+:root {
+  --red: #b3202a; --red-deep: #6e1118; --gold: #d9a441; --black: #0d0b0b; --paper: #efe4cc;
+  --ink: #1c1712; --muted: #8a7f6c; --blue: #2f7fd1; --yellow: #e2ad00; --map: #1a1714;
+  font-family: "Inter", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--black); color: var(--paper); line-height: 1.5; }
+header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 2px solid var(--red); background: #140f0e; }
+header img { width: 40px; height: 40px; border-radius: 22%; }
+header .t { font-weight: 800; letter-spacing: 2px; color: var(--gold); }
+header .s { font-size: 12px; color: var(--muted); }
+header .hud { margin-left: auto; display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; justify-content: flex-end; }
+header .hud b { color: var(--gold); font-weight: 600; }
+button.lang { background: none; border: 1px solid var(--gold); color: var(--gold); border-radius: 6px; padding: 4px 10px; cursor: pointer; font: inherit; }
+main { max-width: 760px; margin: 0 auto; padding: 20px 16px 48px; }
+.phase { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); font-weight: 700; }
+h1 { margin: 4px 0 12px; font-size: 26px; color: var(--paper); }
+.ru { color: var(--gold); font-style: italic; }
+p { margin: 0 0 12px; }
+.choices { display: flex; flex-direction: column; gap: 10px; margin-top: 16px; }
+.choices button, .primary { text-align: left; background: #1d1716; color: var(--paper); border: 1px solid #3b2f2c; border-left: 4px solid var(--red); border-radius: 6px; padding: 12px 14px; font: inherit; cursor: pointer; }
+.choices button:hover, .primary:hover { border-color: var(--gold); }
+.primary { border-left-color: var(--gold); font-weight: 700; }
+.form { background: var(--paper); color: var(--ink); border-radius: 4px; padding: 20px; font-family: "Courier New", monospace; box-shadow: 0 0 0 6px #2a211e; }
+.form h2 { margin: 0 0 4px; font-size: 18px; text-align: center; letter-spacing: 1px; }
+.form .stamp { text-align: center; font-size: 12px; color: #6b5f4d; margin-bottom: 16px; }
+.form fieldset { border: 1px dashed #8d7f66; margin: 0 0 14px; padding: 10px 12px; }
+.form legend { padding: 0 6px; font-weight: 700; }
+.form label { display: flex; align-items: center; gap: 8px; margin: 6px 0; cursor: pointer; }
+.form select { font: inherit; padding: 6px; width: 100%; }
+.sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.form .row { display: flex; justify-content: space-between; border-bottom: 1px dotted #b5a88f; padding: 3px 0; font-size: 14px; }
+.form .ok { margin-top: 12px; text-align: center; font-weight: 800; color: var(--red); font-size: 20px; letter-spacing: 3px; }
+.form button { margin-top: 12px; width: 100%; background: var(--red); color: #fff; border: 0; padding: 12px; font: inherit; font-weight: 700; cursor: pointer; border-radius: 3px; }
+canvas { width: 100%; height: auto; display: block; background: var(--map); border: 1px solid #3b2f2c; border-radius: 6px; }
+.overlay { min-height: 24px; color: var(--gold); font-style: italic; margin: 8px 0; }
+.result { margin-top: 12px; }
+.result li.me { color: var(--gold); font-weight: 700; }
+.receipt { background: var(--paper); color: var(--ink); font-family: "Courier New", monospace; padding: 14px; border-radius: 3px; font-size: 14px; }
+.receipt .row { display: flex; justify-content: space-between; }
+.dossier { margin-top: 24px; border-top: 1px solid #3b2f2c; padding-top: 12px; font-size: 13px; color: var(--muted); }
+.dossier li { color: var(--paper); }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding: 16px; }
