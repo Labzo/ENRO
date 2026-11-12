@@ -34,8 +34,14 @@ export function displayedTotal(s: State): number {
   return BRANCHES.reduce((n, b) => n + displayedSkill(s, b), 0);
 }
 const KEY = 'enro-save-v1';
+/** Saves from another format version or with missing fields count as no save. The race RNG is derived from seed + step, so these fields restore it too. */
+function compatible(x: unknown): x is State {
+  const s = x as Partial<State> | null;
+  return !!s && s.v === 1 && typeof s.seed === 'number' && typeof s.step === 'number' && typeof s.eur === 'number' && typeof s.krub === 'number'
+    && Array.isArray(s.dossier) && !!s.skill && BRANCHES.every(b => typeof s.skill![b] === 'number');
+}
 export function save(s: State): void { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* ignore */ } }
 export function load(): State | null {
-  try { const r = localStorage.getItem(KEY); return r ? (JSON.parse(r) as State) : null; } catch { return null; }
+  try { const r = localStorage.getItem(KEY); const s: unknown = r ? JSON.parse(r) : null; return compatible(s) ? s : null; } catch { return null; }
 }
 export function wipe(): void { try { localStorage.removeItem(KEY); } catch { /* ignore */ } }

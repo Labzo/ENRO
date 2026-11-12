@@ -7,6 +7,7 @@ import { rng, seedFrom } from './rng';
 
 let lang: Lang = (() => { try { const v = localStorage.getItem('enro-lang'); if (v === 'hu' || v === 'en') return v; } catch { /* */ } return navigator.language.toLowerCase().startsWith('hu') ? 'hu' : 'en'; })();
 let S: State | null = load();
+let atTitle = true;
 const tr = (k: Key) => L[k][lang];
 const pick = (hu: string, en: string) => (lang === 'hu' ? hu : en);
 const main = document.querySelector('main')!;
@@ -46,11 +47,19 @@ function scene(sc: Scene): void {
 }
 
 // ---------- title & character form ----------
+function newGame(): void { wipe(); S = newState(seedFrom('ENRO-Budapest-' + Date.now())); S.step = -1; save(S); render(); }
+function confirmNew(): void {
+  scene({ phase: 'ENRO', title: tr('start'), body: [tr('confirmNew')], choices: [
+    { label: tr('confirmYes'), act: newGame },
+    { label: tr('cancel'), act: title },
+  ] });
+}
 function title(): void {
+  atTitle = true;
   scene({ phase: 'ENRO', title: 'Europ Night Racing Online', body: [tr('intro'), tr('demo')], ru: '«Освободительная операция»',
     choices: [
-      ...(S?.character ? [{ label: tr('cont'), act: () => render() }] : []),
-      { label: tr('start'), act: () => { wipe(); S = newState(seedFrom('ENRO-Budapest-' + Date.now())); S.step = -1; save(S); render(); } },
+      ...(S ? [{ label: tr('cont'), act: () => render() }] : []),
+      { label: tr('start'), act: () => (S ? confirmNew() : newGame()) },
     ] });
 }
 function form(): void {
@@ -93,7 +102,7 @@ function form(): void {
       S.character = { kind, nameHu: n?.hu ?? '№ 0417', nameRu: n?.ru ?? '«Гражданин № 0417»', branch: n?.branch ?? null };
       if (kind === 'android') { S.privyazka = 25; note('«Пол: не применимо» → «Одобрено»'); }
       f.append(el('div', 'ok', tr('approved')));
-      sub.disabled = true; setTimeout(advance, 900);
+      sub.disabled = true; save(S); setTimeout(() => { if (f.isConnected) advance(); }, 900);
     };
     box.append(f); fill();
   } });
@@ -119,6 +128,7 @@ function race(kindHu: string, kindEn: string, ru: string, laps: number, reward: 
     const t0 = performance.now(); const speed = 1.6;
     const glaz = sober ? 120 : 70;
     function frame(now: number): void {
+      if (!cv.isConnected) return;
       const t = Math.min(total, ((now - t0) / 1000) * speed * 4);
       draw(t);
       if (res.doorAt !== null && t / total > res.doorAt) ov.textContent = tr('door');
@@ -151,7 +161,7 @@ function race(kindHu: string, kindEn: string, ru: string, laps: number, reward: 
       const ol = el('ol', 'result');
       res.order.forEach(id => { const li = el('li', id === 'P' ? 'me' : '', id === 'P' ? `01 (${tr('you')})` : `${id} · bot`); ol.append(li); });
       main.append(el('p', '', `${res.playerPlace}. ${tr('place')}. ${pick('Egy bot nyert. A csaló mindig nyer.', 'A bot won. The cheater always wins.')}`), ol);
-      const b = el('button', 'primary', tr('next')); b.type = 'button'; b.onclick = advance; main.append(b); save(st); hud();
+      const b = el('button', 'primary', tr('next')); b.type = 'button'; b.onclick = render; main.append(b); st.step++; save(st); hud();
     }
     requestAnimationFrame(frame);
   }
@@ -218,15 +228,20 @@ function steps(): Step[] {
   return [...n1, ...d1, ...(s.route === 'proli' ? n2proli : n2race), ...d2, ...d3];
 }
 
-function render(): void {
+function chrome(): void {
   document.documentElement.lang = lang;
   (document.getElementById('sub') as HTMLElement).textContent = tr('sub');
   (document.getElementById('lang') as HTMLElement).textContent = lang === 'hu' ? 'EN' : 'HU';
+}
+function render(): void {
+  chrome();
   if (!S) return title();
+  atTitle = false;
   if (S.step < 0 || !S.character) { S.step = Math.max(S.step, -1); if (!S.character) return form(); S.step = 0; }
   const list = steps();
   const step = list.at(Math.min(S.step, list.length - 1))!;
   step();
 }
-document.getElementById('lang')!.addEventListener('click', () => { lang = lang === 'hu' ? 'en' : 'hu'; try { localStorage.setItem('enro-lang', lang); } catch { /* */ } render(); });
-S ? title() : title();
+document.getElementById('lang')!.addEventListener('click', () => { lang = lang === 'hu' ? 'en' : 'hu'; try { localStorage.setItem('enro-lang', lang); } catch { /* */ } chrome(); if (atTitle) title(); else render(); });
+chrome();
+title();
